@@ -1,16 +1,13 @@
 <!DOCTYPE html>
-
-<html>
-    <head>
-        <title>TechShop</title>
-        <meta charset="UTF-8"/>
-        
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+    <head th:replace="~{layout/plantilla :: head}">
+        <title>TechShopito</title>
     </head>
     <body>
-        <h1>TechShop</h1>
-        <a href="/">TechShop</a>|<a href="ejemplo2">Jack</a>
-        <h2>Su tienda en linea</h2>
-        <p>Creada en 2018 para la conveniencia de la poblacion mundial</p>
+        <header th:replace="~{layout/plantilla :: header}"/>
         
+        <footer th:replace="~{layout/plantilla :: footer}"/>
     </body>
 </html>
