@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Niko Arts - Wallpapers</title>
+        <link rel="stylesheet" th:href="@{/css/estilos.css}">
+
+        <meta charset="UTF-8">
+    </head>
+    <body>
+        <header>
+            <nav>
+                <a th:href="@{/}">HOME</a> |
+                <a th:href="@{/cases}">CASES</a> |
+                <a th:href="@{/wallpapers}">WALLPAPERS</a> |
+                <a th:href="@{/cart}">CART</a> |
+                <a th:href="@{/gallery}">GALLERY</a>
+            </nav>
+            <form method="get" action="#">
+                <input type="text" name="buscar" placeholder="BUSCAR">
+                <button type="submit">Buscar</button>
+            </form>
+        </header>
+
+        <h1>Wallpapers</h1>
+        <div th:each="wallpaper : ${wallpapers}">
+            <h2 th:text="${wallpaper.nombre}">Nombre del wallpaper</h2>
+            <p th:text="'Precio: $' + ${wallpaper.precio}">Precio</p>
+            <p th:text="${wallpaper.descripcion}">Descripción</p>
+            <img th:src="@{${wallpaper.imagenUrl}}" alt="Imagen del wallpaper" width="150">
+            <form method="post" action="/cart/add">
+                <input type="hidden" th:value="${wallpaper.id}" name="productoId">
+                <input type="number" name="cantidad" value="1" min="1">
+                <button type="submit">PAY NOW</button>
+            </form>
+        </div>
+    </body>
+</html>

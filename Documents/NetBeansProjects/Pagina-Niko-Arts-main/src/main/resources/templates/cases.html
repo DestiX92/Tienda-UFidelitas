@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Niko Arts - Cases</title>
+        <link rel="stylesheet" th:href="@{/css/estilos.css}">
+
+        <meta charset="UTF-8">
+    </head>
+    <body>
+        <header>
+            <nav>
+                <a th:href="@{/}">HOME</a> |
+                <a th:href="@{/cases}">CASES</a> |
+                <a th:href="@{/wallpapers}">WALLPAPERS</a> |
+                <a th:href="@{/cart}">CART</a> |
+                <a th:href="@{/gallery}">GALLERY</a>
+            </nav>
+            <form method="get" action="#">
+                <input type="text" name="buscar" placeholder="BUSCAR">
+                <button type="submit">Buscar</button>
+            </form>
+        </header>
+
+        <h1>Cases</h1>
+        <div th:each="estuche : ${estuches}">
+            <h2 th:text="${estuche.nombre}">Nombre del estuche</h2>
+            <p th:text="'Precio: $' + ${estuche.precio}">Precio</p>
+            <p th:text="${estuche.descripcion}">Descripción</p>
+            <img th:src="@{${estuche.imagenUrl}}" alt="Imagen del estuche" width="150">
+            <form method="post" action="/cart/add">
+                <input type="hidden" th:value="${estuche.id}" name="productoId">
+                <input type="number" name="cantidad" value="1" min="1">
+                <button type="submit">PAY NOW</button>
+            </form>
+        </div>
+    </body>
+</html>
