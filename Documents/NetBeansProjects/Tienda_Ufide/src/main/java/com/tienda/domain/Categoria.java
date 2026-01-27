@@ -38,4 +38,4 @@ public class Categoria implements Serializable {
     private Boolean activo;
 }
 
-
+//Dependencias no se registran bien, causando errores, solucion desconocida
