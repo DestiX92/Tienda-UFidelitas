@@ -6,10 +6,14 @@ package com.tienda.service;
 
 import com.tienda.domain.Categoria;
 import com.tienda.repository.CategoriaRepository;
+import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class CategoriaService {
@@ -25,4 +29,44 @@ public class CategoriaService {
         }
         return categoriaRepository.findAll();
     }
+    
+    @Transactional(readOnly = true)
+public Optional<Categoria> getCategoria(Integer idCategoria) {
+    return categoriaRepository.findById(idCategoria);
 }
+
+@Autowired
+private FirebaseStorageService firebaseStorageService;
+
+@Transactional
+public void save(Categoria categoria, MultipartFile imagenFile) {
+    categoria = categoriaRepository.save(categoria);
+    if (!imagenFile.isEmpty()) { // Si no está vacío... pasaron una imagen...
+        try {
+            String rutaImagen = firebaseStorageService.uploadImage(
+                imagenFile, "categoria",
+                categoria.getIdCategoria());
+            categoria.setRutaImagen(rutaImagen);
+            categoriaRepository.save(categoria);
+        } catch (IOException e) {
+            // Manejo de error opcional
+        }
+    }
+}
+
+@Transactional
+public void delete(Integer idCategoria) {
+    // Verifica si la categoría existe antes de intentar eliminarla
+    if (!categoriaRepository.existsById(idCategoria)) {
+        throw new IllegalArgumentException("La categoría con ID " + idCategoria + " no existe.");
+    }
+    try {
+        categoriaRepository.deleteById(idCategoria);
+    } catch (DataIntegrityViolationException e) {
+        throw new IllegalStateException("No se puede eliminar la categoría. Tiene datos asociados.", e);
+    }
+  }
+}
+
+
+
