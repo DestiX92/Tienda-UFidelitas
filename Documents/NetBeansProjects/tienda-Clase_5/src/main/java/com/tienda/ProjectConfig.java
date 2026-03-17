@@ -133,29 +133,29 @@ public class ProjectConfig implements WebMvcConfigurer {
     }
 
     //Este método será reemplazado la siguiente semana
-    @Bean
-    public UserDetailsService users(PasswordEncoder passwordEncoder) {
-        UserDetails admin = User.builder()
-                .username("juan")
-                .password(passwordEncoder.encode("123"))
-                .roles("ADMIN")
-                .build();
-
-        UserDetails sales = User.builder()
-                .username("rebeca")
-                .password(passwordEncoder.encode("456"))
-                .roles("VENDEDOR")
-                .build();
-
-        UserDetails user = User.builder()
-                .username("pedro")
-                .password(passwordEncoder.encode("789"))
-                .roles("USUARIO") // Consistent con tu configuración
-                .build();
-
-        return new InMemoryUserDetailsManager(admin, sales, user);
-    }
-
+//    @Bean
+//    public UserDetailsService users(PasswordEncoder passwordEncoder) {
+//        UserDetails admin = User.builder()
+//                .username("juan")
+//                .password(passwordEncoder.encode("123"))
+//                .roles("ADMIN")
+//                .build();
+//
+//        UserDetails sales = User.builder()
+//                .username("rebeca")
+//                .password(passwordEncoder.encode("456"))
+//                .roles("VENDEDOR")
+//                .build();
+//
+//        UserDetails user = User.builder()
+//                .username("pedro")
+//                .password(passwordEncoder.encode("789"))
+//                .roles("USUARIO") // Consistent con tu configuración
+//                .build();
+//
+//        return new InMemoryUserDetailsManager(admin, sales, user);
+//    }
+//
 }
 
 

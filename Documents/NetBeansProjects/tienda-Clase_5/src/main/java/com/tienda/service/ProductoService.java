@@ -3,14 +3,13 @@ package com.tienda.service;
 import com.tienda.domain.Producto;
 import com.tienda.repository.ProductoRepository;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-        
+
 @Service
 public class ProductoService {
     
@@ -22,53 +21,64 @@ public class ProductoService {
         this.firebaseStorageService = firebaseStorageService;
     }
     
-    @Transactional(readOnly = true)
-    public List<Producto> getProductos(boolean activo) {
-        if (activo) {
+    @Transactional (readOnly = true)
+    public List<Producto> getProductos (boolean activo){
+        if (activo){
             return productoRepository.findByActivoTrue();
-        } 
+        }
         return productoRepository.findAll();
     }
     
-    @Transactional(readOnly = true)
-    public Optional<Producto> getProducto(Integer idProducto) {
+    @Transactional (readOnly = true)
+    public Optional<Producto> getProducto (Integer idProducto){
         return productoRepository.findById(idProducto);
     }
+    
     @Transactional
-    public void save(Producto producto, MultipartFile imagenFile){
+    public void save (Producto producto, MultipartFile imagenFile){
         producto = productoRepository.save(producto);
-        if (!imagenFile.isEmpty()) {
+        if (!imagenFile.isEmpty()){
             try {
-                String rutaImagen = firebaseStorageService.uploadImage(imagenFile, "producto", producto.getIdProducto());
+                String rutaImagen = firebaseStorageService.uploadImage(
+                        imagenFile, "producto",
+                        producto.getIdProducto());
                 producto.setRutaImagen(rutaImagen);
                 productoRepository.save(producto);
-            } catch (IOException e) {  
+            }catch (IOException e){
+                
             }
         }
     }
+    
     @Transactional
-    public void delete(Integer idProducto) {
+    public void delete (Integer idProducto){
+        //Verifica si la categoría existe entes de intentar eliminarlo
         if (!productoRepository.existsById(idProducto)){
-            throw new IllegalArgumentException("La categoria con ID " + idProducto + " no existe.");
+            //Lanza una excepción para indicar que el usuario no fue encontrado
+            throw new IllegalArgumentException("La categoría con ID" + idProducto + " no existe");
+            
         }
-        try {
+        try{
             productoRepository.deleteById(idProducto);
-        } catch (DataIntegrityViolationException e) {
-            throw new IllegalStateException("No se puede eliminar la producto. Tiene datos asociados", e);
+        }catch (DataIntegrityViolationException e){
+            //Lanza una nueva excepción para encapsular el problema de integridad de datos
+            throw new IllegalStateException("No se puede eliminar la producto. Tiene datos asociados.", e);
         }
     }
     
-    @Transactional (readOnly = true)
-    public List<Producto> consultaDerivada(BigDecimal precioInf, BigDecimal precioSup){
+    @Transactional(readOnly = true)
+    public List<Producto> consultaDerivada (double precioInf, double precioSup){
         return productoRepository.findByPrecioBetweenOrderByPrecioAsc(precioInf, precioSup);
     }
     
     @Transactional(readOnly = true)
-    public List<Producto> consultaJPQL(BigDecimal precioInf, BigDecimal precioSup){
+    public List<Producto> consultaJPQL(double precioInf, double precioSup){
         return productoRepository.consultaJPQL(precioInf, precioSup);
     }
-     @Transactional(readOnly = true)
-    public List<Producto> consultaSQL(BigDecimal precioInf, BigDecimal precioSup){
-        return productoRepository.consultaSQL(precioInf, precioSup);
+    
+    @Transactional(readOnly = true)
+    public List<Producto> consultaSQL(double precioInf, double precioSup){
+        return productoRepository.consultasSQL(precioInf, precioSup);
     }
+    
 }
