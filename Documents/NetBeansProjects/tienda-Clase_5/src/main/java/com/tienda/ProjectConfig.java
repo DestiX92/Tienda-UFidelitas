@@ -1,6 +1,9 @@
 package com.tienda;
 
+import com.tienda.domain.Ruta;
+import com.tienda.service.RutaService;
 import java.util.Locale;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -97,16 +100,26 @@ public class ProjectConfig implements WebMvcConfigurer {
     public static final String[] USUARIO_URLS = {
         "/facturar/carrito"
     };
-
+    @Autowired
+    private RutaService rutaService;
+            
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(request -> request
-                .requestMatchers(PUBLIC_URLS).permitAll()
-                .requestMatchers(ADMIN_URLS).hasRole("ADMIN")
-                .requestMatchers(ADMIN_OR_VENDEDOR_URLS).hasAnyRole("ADMIN", "VENDEDOR")
-                .requestMatchers(USUARIO_URLS).hasRole("USUARIO")
-                .anyRequest().authenticated()
-        ).formLogin(form -> form // Configuración de formulario de login
+        
+        var rutas = rutaService.getRutas();
+
+        http.authorizeHttpRequests(requests -> {
+            for (Ruta ruta : rutas) {
+                if (ruta.isRequiereRol()) {
+                    requests.requestMatchers(ruta.getRuta()).hasRole(ruta.getRol().getRol());
+                } else {
+                    requests.requestMatchers(ruta.getRuta()).permitAll();
+                }
+            }
+            requests.anyRequest().authenticated();
+        });
+        
+        http.formLogin(form -> form // Configuración de formulario de login
                 .loginPage("/login")
                 .loginProcessingUrl("/login")
                 .defaultSuccessUrl("/", true)
